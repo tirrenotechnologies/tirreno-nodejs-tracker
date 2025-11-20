@@ -1,0 +1,99 @@
+<html lang='en'>
+
+<head>
+  <meta charset='UTF-8' />
+  <title>
+    {{#if isAbout}}
+    About
+    {{else}}
+    Home
+    {{/if}}
+  </title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <script type='text/javascript' src="/static/scripts.js" async defer></script>
+</head>
+
+<body>
+  <div class='container'>
+    {{#if isAbout}}
+    <h1>About Page
+    </h1>
+    <p>
+      This is a simple about page rendered using the same Handlebars
+      template.
+    </p>
+    <a href='/' class='button'>
+      Go Home
+    </a>
+    {{else}}
+    <h1>
+      Home Page
+    </h1>
+    <p class='padding-bottom'>
+      Welcome! This is a minimalistic test page using Handlebars.
+    </p>
+    <div class='left-align'>
+      {{#if session}}
+      <p class='title'>
+        User session info:
+      </p>
+      <div class='precode'>
+        {{#each session}}
+        <p class='code'>
+          {{@key}}
+          : "
+          {{this}}
+          "
+        </p>
+        {{/each}}
+      </div>
+      {{/if}}
+    </div>
+    <div class='select'>
+      <select id='select'>
+        <option value>
+          choose request ▼
+        </option>
+        <option value='get'>
+          GET
+        </option>
+        <option value='post'>
+          POST
+        </option>
+        <option value='put'>
+          PUT
+        </option>
+        <option value='delete'>
+          DELETE
+        </option>
+      </select>
+      <a class='button-fill' id='toggleButton'>
+        check
+      </a>
+    </div>
+    {{#if checkResponse}}
+    <div class='left-align'>
+      <div class='precode' id='visibleContent'>
+        <p class='code'>status: {{checkResponse.status}},</p>
+        <p class='code'>ok: {{checkResponse.ok}},</p>
+        <p class='code'>statusText: {{checkResponse.statusText}},</p>
+        <p class='code'>url: {{checkResponse.url}},</p>
+        <p class='code'>headers: {</p>
+        <p class='code'>date: {{checkResponse.headers.date}},</p>
+        <p class='code'>'content-type': {{checkResponse.headers.content-type}}, </p>
+        <p class='code'>connection: {{checkResponse.headers.connection}}, </p>
+        <p class='code'>'x-request-id': {{checkResponse.headers.x-request-id}},</p>
+        <p class='code'> }</p>
+      </div>
+    </div>
+    {{/if}}
+    <div class='padding-top'>
+      <a href='/about' class='button'>
+        About
+      </a>
+    </div>
+    {{/if}}
+  </div>
+</body>
+
+</html>

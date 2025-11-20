@@ -1,0 +1,36 @@
+{
+  "name": "tirreno-tracker",
+  "version": "1.0.0-b1",
+  "description": "Node.js implementation of the tirreno API.",
+  "main": "lib/tracker.js",
+  "type": "module",
+  "exports": {
+    ".": "./lib/tracker.js",
+    "./express": "./lib/adapters/express.js",
+    "./koa": "./lib/adapters/koa.js"
+  },
+  "scripts": {
+    "test": "node --test --experimental-test-coverage"
+  },
+  "keywords": [
+    "tirreno",
+    "security-analytics",
+    "fraud-detection",
+    "audit-trail",
+    "analytics",
+    "monitoring",
+    "bot-detection",
+    "antispam",
+    "application-monitoring"
+  ],
+  "author": "team@tirreno.com",
+  "license": "BSD-3-Clause",
+  "devDependencies": {
+    "@eslint/js": "^9.32.0",
+    "eslint": "^9.32.0",
+    "eslint-config-prettier": "^10.1.8",
+    "express": "^5.1.0",
+    "globals": "^16.3.0",
+    "prettier": "3.6.2"
+  }
+}

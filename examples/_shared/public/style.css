@@ -1,0 +1,136 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 20px;
+  color: #24242b;
+}
+
+select {
+  appearance: none;
+  border: 0;
+  outline: 0;
+  color: inherit;
+  min-width: 290px;
+  text-align: center;
+  box-shadow: none;
+  background: #e5e5e5;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  color: #36354f;
+  padding: 10px;
+  margin-right: 15px;
+  font-size: 14px;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+select::-ms-expand {
+  display: none;
+}
+
+.select {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 400px;
+  margin-bottom: 20px;
+}
+
+option {
+  color: #36354f;
+}
+
+.left-align {
+  text-align: left;
+  width: 400px;
+}
+
+.title {
+  color: #36354f;
+  margin-bottom: 0;
+}
+
+.code {
+  font-family: monospace;
+  margin-top: 0px;
+  margin-bottom: 10px;
+  color: #e5e5e5;
+}
+
+.precode {
+  margin: 10px 0px 20px 0px;
+  padding: 20px;
+  border-radius: 5px;
+  background-color: #24242b;
+  text-align: left;
+}
+
+p {
+  margin-bottom: 20px;
+  color: #6c6c6f;
+  max-width: 400px;
+}
+
+a {
+  font-size: 14px;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+.button-fill {
+  display: inline-block;
+  padding: 10px 20px;
+  color: #e5e5e5;
+  background-color: #36354f;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.button-fill:hover {
+  background-color: #131220;
+  cursor: pointer;
+}
+
+.button {
+  display: inline-block;
+  padding: 10px 20px;
+  color: #36354f;
+  background-color: #e5e5e5;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.button:hover {
+  background-color: #d3d3d3;
+}
+
+.padding-top {
+  padding-top: 60px;
+}
+
+.padding-bottom {
+  padding-bottom: 60px;
+}
+
+#visibleContent {
+  height: 200px;
+  overflow-y: scroll;
+  scrollbar-width: thin;
+}

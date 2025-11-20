@@ -1,0 +1,26 @@
+{
+  "name": "koa",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "start": "node -r dotenv/config index.js",
+    "debug": "NODE_DEBUG=tracker npm run start",
+    "postinstall": "../_shared/postinstall.sh"
+  },
+  "dependencies": {
+    "@koa/router": "^14.0.0",
+    "@ladjs/koa-views": "^9.0.0",
+    "dotenv": "^17.2.3",
+    "handlebars": "^4.7.8",
+    "koa": "^3.0.1",
+    "koa-mount": "^4.2.0",
+    "koa-session": "^7.0.2",
+    "koa-static": "^5.0.0",
+    "node-tracker": "file:../.."
+  }
+}
