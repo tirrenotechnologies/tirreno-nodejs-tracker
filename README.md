@@ -1,7 +1,12 @@
 # tirreno NodeJS tracker library
 
-A lightweight JavaScript library for sending tracking events to tirreno console API.  
-Supports multiple operation modes and includes an **Express middleware** for seamless server integration.
+A lightweight JavaScript library for sending tracking events to a sensor API.
+
+Supports:
+- standalone usage via `Tracker`
+- automatic request tracking via **Express** and **Koa** middleware
+
+The library uses an explicit event builder and sends events via `tracker.track(event)`.
 
 ---
 
@@ -15,41 +20,45 @@ npm install tirreno-tracker
 
 ## Usage
 
-### 1. Basic Example
+## 1. Standalone usage (without middleware)
+
+Use this mode when you want to manually control when and how events are sent.
 
 ```js
 import Tracker from 'tirreno-tracker';
 
-const options = {
-  populated: false, // Include only required fields
-};
-
-const tirrenoUrl = "https://example.tld";
-const trackingId = "XXX";
-
 const tracker = new Tracker(
-  tirrenoUrl,
-  trackingId,
-  options,
+    'https://api.example.com', // API URL
+    'YOUR_API_KEY',            // API key
 );
 
-// somewhere in your request handler
-await tracker.sendEvent({
-  ipAddress: '1.1.1.1',
-  url: '/',
-  userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36',
-  browserLanguage: 'en-US;q=0.8,en;q=0.7',
-  httpMethod: 'GET',
-});
+// somewhere in your request / service handler
+const event = tracker.createEvent();
+
+event
+    .setIpAddress('1.1.1.1')
+    .setUrl('/about-us.html')
+    .setUserAgent('Mozilla/5.0 (X11; Linux x86_64)')
+    .setBrowserLanguage('en-US')
+    .setHttpMethod('GET');
+
+await tracker.track(event);
 ```
+
+This is the **base API** used internally by all middleware.
 
 ---
 
-### 2. Express Middleware
+## 2. Express middleware
 
-Middleware tracks all requests and automatically collects all possible data and
-provides interface for changing event payload fields, using provided `tracker`
-interface in the `req` object
+The Express middleware:
+
+- creates an `Event` for every request
+- attaches it to `req.tracker`
+- **automatically sends the event after the response is finished**
+- lets you modify event fields inside route handlers
+
+Don't call `tracker.track()` manually when using middleware.
 
 ```js
 import express from 'express';
@@ -57,77 +66,166 @@ import trackerMiddleware from 'tirreno-tracker/express';
 
 const app = express();
 
-const tirrenoUrl = "https://example.tld";
-const trackingId = "XXX";
-
 app.use(
-  trackerMiddleware({
-    tirrenoUrl,
-    trackingId,
-  }),
+    trackerMiddleware({
+        url: 'https://api.example.com',
+        key: 'YOUR_API_KEY',
+    }),
 );
 
 app.get('/', (req, res) => {
-  // if you want to change field value, for example the URL
-  req.tracker.url = '/new_url';
-  res.send('Hello World!');
+    req.tracker
+        .setUrl('/new_url')
+        .setUserName('John');
+
+    res.send('Hello World!');
+});
+
+// Event will be sent automatically when response finish
+app.listen(3000, () => {
+    console.log('Server running on http://localhost:3000');
 });
 ```
 
 ---
 
-## Configuration
+## 3. Koa middleware
 
-| Option               | Type       | Default      | Description                                    |
-| -------------------- | ---------- | ------------ | ---------------------------------------------- |
-| `url`                | `string`   | **required** | Base API URL                                   |
-| `key`                | `string`   | **required** | API key for authorization                      |
-| `settings.populated` | `boolean`  | `true`       | Whether to include additional request metadata |
-| `settings.fields`    | `string[]` | `[]`         | Custom fields to send                          |
-| `settings.mapper`    | `object`   | `auto`       | Custom mapping configuration                   |
+The Koa middleware behaves exactly like the Express one:
+
+- creates an `Event` for every request
+- attaches it to `ctx.state.tracker`
+- **automatically sends the event after the response is finished**
+- lets you modify event fields inside handlers
+
+Don't call `tracker.track()` manually.
+
+```js
+import Koa from 'koa';
+import trackerMiddleware from 'tirreno-tracker/koa';
+
+const app = new Koa();
+
+app.use(
+    trackerMiddleware({
+        url: 'https://api.example.com',
+        key: 'YOUR_API_KEY',
+    }),
+);
+
+app.use(async (ctx) => {
+    ctx.state.tracker
+        .setUrl('/new_url')
+        .setUserName('John');
+
+    ctx.body = 'Hello Koa!';
+});
+
+// Event will be sent automatically when response finish
+app.listen(3001, () => {
+    console.log('Server running on http://localhost:3001');
+});
+```
 
 ---
 
-Mapping settings structure:
+## Debug logging
 
-```js
-const settings = {
-  mapper: {
-    from: 'session.user', // Path to get data from `req.session.user` object of 'express-session' package
-    fields: {
-      userName: 'username', // The key 'userName' using in the request body and get value from 'req.session.user.username'
-      emailAddress: 'info.email', // 'req.session.user.info.email'
-    },
-  },
-};
+Tracker supports optional debug logging via Node.js `NODE_DEBUG`.
+
+To enable debug output to the console, run your application with:
+
+```bash
+NODE_DEBUG=tracker node app.js
 ```
 
-### EventData
+This is useful for local development and troubleshooting.
 
-Tracker event data object
+---
 
-Type: `object`  
+## Configuration
+
+### Tracker options
+
+| Option      | Type     | Required | Description                         |
+|-------------|----------|----------|-------------------------------------|
+| `url`       | `string` | yes      | Base API URL                        |
+| `key`       | `string` | yes      | API key for authorization           |
+| `timeoutMs` | `number` | no       | Event timeout in milliseconds       |
+
+---
+
+## API Reference
+
+### `new Tracker(url, key)`
+
+Creates a new tracker instance.
+
+#### Parameters
+
+- `url` (`string`) — API endpoint URL
+- `key` (`string`) — API key
+
+---
+
+### `tracker.createEvent()`
+
+Creates a new event builder instance.
+
+Returns: `Event`
+
+---
+
+### `tracker.track(event)`
+
+Sends the event to the sensor API.
+
+Returns: `Promise<void>`
+
+---
+
+## Event fields
+
+Event fields are set via explicit setters:
+
+```js
+event
+    .setUserName('John')
+    .setIpAddress('1.1.1.1')
+    .setUrl('/admin/users')
+    .setUserAgent('Mozilla/5.0')
+    .setBrowserLanguage('en-US')
+    .setHttpMethod('GET')
+    .setHttpReferer('https://example.com');
+```
+
+### Supported fields
+
 See also: [API Parameters](https://docs.tirreno.com/api-integration.html#parameters)
 
-| Property          | Type            | Required | Description                                                                        |
-| ----------------- | --------------- | -------- | ---------------------------------------------------------------------------------- |
-| `userName`        | `string`        | yes      | A user identifier                                                                  |
-| `ipAddress`       | `string`        | yes      | An IP address associated with an event                                             |
-| `url`             | `string`        | yes      | A URL path of a resource requested                                                 |
-| `eventTime`       | `string`        | yes      | A timestamp of an event                                                            |
-| `emailAddress`    | `string`        | no       | An email address associated with a user                                            |
-| `userAgent`       | `string`        | no       | A user agent string value                                                          |
-| `browserLanguage` | `string`        | no       | A detected language of the browser                                                 |
-| `httpMethod`      | `string`        | no       | The type of HTTP request: GET, POST, etc.                                          |
-| `httpReferer`     | `string`        | no       | A value of the Referer HTTP header field                                           |
-| `pageTitle`       | `string`        | no       | A title of a visited resource                                                      |
-| `fullName`        | `string`        | no       | A user’s whole name                                                                |
-| `firstName`       | `string`        | no       | A user’s first name                                                                |
-| `lastName`        | `string`        | no       | A user’s last name                                                                 |
-| `phoneNumber`     | `string`        | no       | A user’s phone number                                                              |
-| `eventType`       | `string`        | no       | Event type ([reference](https://docs.tirreno.com/api-integration.html#event-type)) |
-| `httpCode`        | `string`        | no       | An HTTP response status code the request ended with                                |
-| `payload`         | `array<object>` | no       | An array of payloads                                                               |
+
+| Field             | Required | Description |
+|------------------|----------|-------------|
+| `userName`        | yes      | User identifier |
+| `ipAddress`       | yes      | IP address |
+| `url`             | yes      | Requested URL |
+| `eventTime`       | yes      | UTC event timestamp (set automatically) |
+| `emailAddress`    | no       | User email |
+| `userAgent`       | no       | User-Agent string |
+| `browserLanguage` | no       | Browser language |
+| `httpMethod`      | no       | HTTP method |
+| `httpReferer`     | no       | Referer header |
+| `pageTitle`       | no       | Page title |
+| `fullName`        | no       | Full name |
+| `firstName`       | no       | First name |
+| `lastName`        | no       | Last name |
+| `phoneNumber`     | no       | Phone number |
+| `eventType`       | no       | Event type |
+| `httpCode`        | no       | Response HTTP code |
+| `payload`         | no       | Custom payload object for `page_search` or `account_email_change` event types |
+| `fieldHistory`    | no       | Field history array for `field_edit` event type |
+
+---
 
 ## License
 

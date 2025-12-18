@@ -1,16 +1,20 @@
 {
-  "name": "tirreno-tracker",
-  "version": "1.0.0-b1",
+  "name": "@tirreno/tirreno-tracker",
+  "version": "1.0.0-b2",
   "description": "Node.js implementation of the tirreno API.",
-  "main": "lib/tracker.js",
+  "main": "lib/Tracker.js",
   "type": "module",
   "exports": {
-    ".": "./lib/tracker.js",
-    "./express": "./lib/adapters/express.js",
-    "./koa": "./lib/adapters/koa.js"
+    ".": "./lib/Tracker.js",
+    "./express": "./lib/adapters/Express.js",
+    "./koa": "./lib/adapters/Koa.js"
   },
+  "files": [
+    "lib"
+  ],
   "scripts": {
-    "test": "node --test --experimental-test-coverage"
+    "test": "node --test --experimental-test-coverage",
+    "lint": "eslint ."
   },
   "keywords": [
     "tirreno",
@@ -32,5 +36,21 @@
     "express": "^5.1.0",
     "globals": "^16.3.0",
     "prettier": "3.6.2"
-  }
+  },
+  "dependencies": {
+    "qs": "^6.14.0"
+  },
+  "directories": {
+    "example": "examples",
+    "lib": "lib",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tirrenotechnologies/tirreno-nodejs-tracker.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tirrenotechnologies/tirreno-nodejs-tracker/issues"
+  },
+  "homepage": "https://github.com/tirrenotechnologies/tirreno-nodejs-tracker#readme"
 }
