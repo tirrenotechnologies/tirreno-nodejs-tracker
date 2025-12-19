@@ -13,7 +13,7 @@ The library uses an explicit event builder and sends events via `tracker.track(e
 ## Installation
 
 ```bash
-npm install tirreno-tracker
+npm install @tirreno/tirreno-tracker
 ```
 
 ---
@@ -25,22 +25,27 @@ npm install tirreno-tracker
 Use this mode when you want to manually control when and how events are sent.
 
 ```js
-import Tracker from 'tirreno-tracker';
+import Tracker from '@tirreno/tirreno-tracker';
+
+const tirrenoUrl = 'https://example.tld';
+const trackingId = 'XXX';
 
 const tracker = new Tracker(
-    'https://api.example.com', // API URL
-    'YOUR_API_KEY',            // API key
+    tirrenoUrl,
+    trackingId,
 );
 
 // somewhere in your request / service handler
 const event = tracker.createEvent();
 
 event
+    .setUserName('johndoe42')
     .setIpAddress('1.1.1.1')
-    .setUrl('/about-us.html')
+    .setUrl('/login')
     .setUserAgent('Mozilla/5.0 (X11; Linux x86_64)')
-    .setBrowserLanguage('en-US')
-    .setHttpMethod('GET');
+    .setBrowserLanguage('fr-FR,fr;q=0.9')
+    .setHttpMethod('POST')
+    .setEventTypeAccountLogin();
 
 await tracker.track(event);
 ```
@@ -62,14 +67,17 @@ Don't call `tracker.track()` manually when using middleware.
 
 ```js
 import express from 'express';
-import trackerMiddleware from 'tirreno-tracker/express';
+import trackerMiddleware from '@tirreno/tirreno-tracker/express';
 
 const app = express();
 
+const tirrenoUrl = 'https://example.tld';
+const trackingId = 'XXX';
+
 app.use(
     trackerMiddleware({
-        url: 'https://api.example.com',
-        key: 'YOUR_API_KEY',
+        url: tirrenoUrl,
+        key: trackingId,
     }),
 );
 
@@ -102,14 +110,17 @@ Don't call `tracker.track()` manually.
 
 ```js
 import Koa from 'koa';
-import trackerMiddleware from 'tirreno-tracker/koa';
+import trackerMiddleware from '@tirreno/tirreno-tracker/koa';
 
 const app = new Koa();
 
+const tirrenoUrl = 'https://example.tld';
+const trackingId = 'XXX';
+
 app.use(
     trackerMiddleware({
-        url: 'https://api.example.com',
-        key: 'YOUR_API_KEY',
+        url: tirrenoUrl,
+        key: trackingId,
     }),
 );
 
@@ -190,12 +201,13 @@ Event fields are set via explicit setters:
 
 ```js
 event
-    .setUserName('John')
+    .setUserName('johndoe42')
     .setIpAddress('1.1.1.1')
-    .setUrl('/admin/users')
-    .setUserAgent('Mozilla/5.0')
-    .setBrowserLanguage('en-US')
-    .setHttpMethod('GET')
+    .setUrl('/login')
+    .setUserAgent('Mozilla/5.0 (X11; Linux x86_64)')
+    .setBrowserLanguage('fr-FR,fr;q=0.9')
+    .setHttpMethod('POST')
+    .setEventTypeAccountLogin();
     .setHttpReferer('https://example.com');
 ```
 
