@@ -1,6 +1,6 @@
 # tirreno NodeJS tracker library
 
-A lightweight JavaScript library for sending tracking events to a sensor API.
+This is the official JavaScript implementation of the [tirreno Tracking API](https://docs.tirreno.com/api-integration.html).
 
 Supports:
 - standalone usage via `Tracker`
@@ -27,8 +27,8 @@ Use this mode when you want to manually control when and how events are sent.
 ```js
 import Tracker from '@tirreno/tirreno-tracker';
 
-const tirrenoUrl = 'https://example.tld';
-const trackingId = 'XXX';
+const tirrenoUrl = 'https://example.tld/sensor/'; // Sensor URL
+const trackingId = 'XXX'; // Tracking ID
 
 const tracker = new Tracker(
     tirrenoUrl,
@@ -71,8 +71,8 @@ import trackerMiddleware from '@tirreno/tirreno-tracker/express';
 
 const app = express();
 
-const tirrenoUrl = 'https://example.tld';
-const trackingId = 'XXX';
+const tirrenoUrl = 'https://example.tld/sensor/'; // Sensor URL
+const trackingId = 'XXX'; // Tracking ID
 
 app.use(
     trackerMiddleware({
@@ -114,8 +114,8 @@ import trackerMiddleware from '@tirreno/tirreno-tracker/koa';
 
 const app = new Koa();
 
-const tirrenoUrl = 'https://example.tld';
-const trackingId = 'XXX';
+const tirrenoUrl = 'https://example.tld/sensor/'; // Sensor URL
+const trackingId = 'XXX'; // Tracking ID
 
 app.use(
     trackerMiddleware({

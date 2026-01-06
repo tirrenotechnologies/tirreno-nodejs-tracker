@@ -1,6 +1,6 @@
 {
   "name": "@tirreno/tirreno-tracker",
-  "version": "1.0.0-b4",
+  "version": "1.0.0-b5",
   "description": "Node.js implementation of the tirreno API.",
   "main": "lib/Tracker.js",
   "type": "module",
