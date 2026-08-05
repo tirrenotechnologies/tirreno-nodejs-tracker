@@ -42,7 +42,7 @@ describe('Express tracker middleware', () => {
             headers: {
                 'user-agent': 'TestAgent/1.0',
                 'accept-language': 'en-US',
-                referrer: 'https://referrer.test'
+                referer: 'https://referrer.test'
             }
         };
 
@@ -116,5 +116,25 @@ describe('Express tracker middleware', () => {
         assert.ok(body.includes('browserLanguage=en-US'));
         assert.ok(body.includes('httpMethod=GET'));
         assert.ok(body.includes('httpReferer=https%3A%2F%2Freferrer.test'));
+    });
+
+    it('should fall back to referrer header when referer is absent', async () => {
+        const middleware = trackerMiddleware({
+            url: 'https://example.test',
+            key: 'api-key'
+        });
+
+        const { req, res } = createReqRes();
+        req.headers = {
+            'user-agent': 'TestAgent/1.0',
+            'accept-language': 'en-US',
+            referrer: 'https://legacy-referrer.test'
+        };
+
+        middleware(req, res, () => {});
+        await res.emitFinish();
+
+        const body = fetchSpy.calls[0][1].body;
+        assert.ok(body.includes('httpReferer=https%3A%2F%2Flegacy-referrer.test'));
     });
 });
